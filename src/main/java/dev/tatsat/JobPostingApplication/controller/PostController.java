@@ -5,6 +5,8 @@ import dev.tatsat.JobPostingApplication.repository.PostRepository;
 import dev.tatsat.JobPostingApplication.repository.SearchPostRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,11 +25,11 @@ public class PostController {
         return postRepository.findAll();
     }
 
-
     @PostMapping("/addPost")
-    public PostModel addPost(@RequestBody PostModel postModel) {
+    public ResponseEntity<PostModel> addPost(@RequestBody PostModel postModel) {
         postModel.setId(new ObjectId());
-        return postRepository.save(postModel);
+        postRepository.save(postModel);
+        return new ResponseEntity<>(postModel, HttpStatus.CREATED);
     }
 
     @GetMapping("/searchPost/{text}")
