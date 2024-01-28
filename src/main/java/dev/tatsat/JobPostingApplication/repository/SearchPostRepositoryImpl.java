@@ -26,23 +26,21 @@ public class SearchPostRepositoryImpl implements SearchPostRepository {
 
     @Override
     public List<PostModel> findByText(String text) {
-
         final List<PostModel> posts = new ArrayList<>();
 
-        MongoDatabase database = client.getDatabase("tatsat");//to be changed
-        MongoCollection<Document> collection = database.getCollection("JobPost");//to be change
+        MongoDatabase database = client.getDatabase("JobSearchPortal");
+        MongoCollection<Document> collection = database.getCollection("JobPost");
 
         AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$search",
-                        new Document("text",
-                                new Document("query", text)
-                                        .append("path", Arrays.asList("techs", "desc", "profile")))),
+                        new Document("index", "auto-search")
+                                .append("text",
+                                        new Document("query", text)
+                                                .append("path", Arrays.asList("skills", "description", "position")))),
                 new Document("$sort",
-                        new Document("exp", 1L)),
-                new Document("$limit", 5L)));
+                        new Document("experience", 1L))));
 
         result.forEach(doc -> posts.add(converter.read(PostModel.class, doc)));
 
         return posts;
     }
-
 }
